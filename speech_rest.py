@@ -30,6 +30,11 @@ from oauth2client.client import GoogleCredentials
 DISCOVERY_URL = ('https://{api}.googleapis.com/$discovery/rest?'
                  'version={apiVersion}')
 
+# CONSTANTS
+#ENCODING = 'LINEAR16'
+ENCODING = 'FLAC'
+#RATE = 16000
+RATE = 8000
 
 # Application default credentials provided by env variable
 # GOOGLE_APPLICATION_CREDENTIALS
@@ -62,8 +67,8 @@ def main(speech_file):
             'config': {
                 # There are a bunch of config options you can specify. See
                 # https://goo.gl/EPjAup for the full list.
-                'encoding': 'LINEAR16',  # raw 16-bit signed LE samples
-                'sampleRate': 16000,  # 16 khz
+                'encoding': ENCODING,  # raw 16-bit signed LE samples
+                'sampleRate': RATE,  # 16 khz
                 # See https://goo.gl/DPeVFW for a list of supported languages.
                 'languageCode': 'en-US',  # a BCP-47 language tag
             },

@@ -27,12 +27,14 @@ from grpc.beta import implementations
 import pyaudio
 
 # Audio recording parameters
-RATE = 16000
+#RATE = 16000
+RATE = 48000
 CHANNELS = 1
-CHUNK = int(RATE / 10)  # 100ms
-
+#CHUNK = int(RATE / 10)  # 100ms
+CHUNK = 2048
 # Keep the request alive for this many seconds
 DEADLINE_SECS = 8 * 60 * 60
+#DEADLINE_SECS = 20 * 60 * 60
 SPEECH_SCOPE = 'https://www.googleapis.com/auth/cloud-platform'
 
 
@@ -66,6 +68,7 @@ def record_audio(channels, rate, chunk):
     audio_stream = audio_interface.open(
         format=pyaudio.paInt16, channels=channels, rate=rate,
         input=True, frames_per_buffer=chunk,
+	input_device_index=1,
     )
 
     yield audio_stream
