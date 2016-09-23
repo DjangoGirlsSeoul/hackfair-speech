@@ -1,5 +1,7 @@
 import pyaudio
 
-pa = pyaudio.PyAudio()
-for x in range(0,pa.get_device_count()):
-    print("X :", str(x),pa.get_device_info_by_index(x))
+p = pyaudio.PyAudio()
+
+for i in range(p.get_device_count()):
+    dev = p.get_device_info_by_index(i)
+    print((i,dev['name'],dev['maxInputChannels']))

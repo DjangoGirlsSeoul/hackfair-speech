@@ -34,7 +34,7 @@ DISCOVERY_URL = ('https://{api}.googleapis.com/$discovery/rest?'
 #ENCODING = 'LINEAR16'
 ENCODING = 'FLAC'
 #RATE = 16000
-RATE = 8000
+RATE = 44100
 
 # Application default credentials provided by env variable
 # GOOGLE_APPLICATION_CREDENTIALS

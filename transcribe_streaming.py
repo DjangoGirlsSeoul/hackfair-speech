@@ -34,8 +34,10 @@ import pygst
 import gst
 
 # Audio recording parameters
-RATE = 16000
-CHUNK = int(RATE / 10)  # 100ms
+#RATE = 16000
+RATE = 48000
+#CHUNK = int(RATE / 10)  # 100ms
+CHUNK = 2048
 
 # The Speech API has a streaming limit of 60 seconds of audio*, so keep the
 # connection alive for that long, plus some more to give the API time to figure
@@ -111,8 +113,9 @@ def record_audio(rate, chunk):
         format=pyaudio.paInt16,
         # The API currently only supports 1-channel (mono) audio
         # https://goo.gl/z757pE
-        channels=1, rate=rate,
+        channels=1, rate=rate, output=False,
         input=True, frames_per_buffer=chunk,
+	input_device_index = 0,
     )
 
     # Create a thread-safe buffer of audio data
@@ -173,7 +176,6 @@ def listen_print_loop(recognize_stream):
         # Display the transcriptions & their alternatives
         for result in resp.results:
             print(result.alternatives)
-            get_songs_from_soundcloud(query)
 
         # Exit recognition if any of the transcribed phrases could be
         # one of our keywords.
@@ -183,39 +185,6 @@ def listen_print_loop(recognize_stream):
             print('Exiting..')
             break
 
-def get_songs_from_soundcloud(query):
-    client = soundcloud.Client(client_id="")
-    tracks = client.get('/tracks', q=QUERY, order='hotness', limit=1)
-    for track in tracks:
-        print(track)
-        stream_url = track.stream_url
-        play_stream(stream_url)
-
-def on_tag(bus, msg):
-    taglist = msg.parse_tag()
-    print ('on_tag:')
-    for key in taglist.keys():
-        print ('\t%s = %s' % (key, taglist[key]))
-
-
-def play_stream(stream_url):
-    #our stream to play
-    music_stream_uri = stream_url
-
-    #creates a playbin (plays media form an uri) 
-    player = gst.element_factory_make("playbin", "player")
-
-    #set the uri
-    player.set_property('uri', music_stream_uri)
-
-    #start playing
-    player.set_state(gst.STATE_PLAYING)
-
-    #listen for tags on the message bus; tag event might be called more than once
-    bus = player.get_bus()
-    bus.enable_sync_message_emission()
-    bus.add_signal_watch()
-    bus.connect('message::tag', on_tag)
 
 def main():
     with cloud_speech.beta_create_Speech_stub(
