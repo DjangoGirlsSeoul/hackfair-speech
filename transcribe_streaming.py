@@ -30,9 +30,10 @@ import pyaudio
 from six.moves import queue
 import json
 import soundcloud
+import subprocess
 
 
-PI = True
+PI = False
 #soundcloud
 
 if PI:
@@ -185,6 +186,17 @@ def listen_print_loop(recognize_stream):
         if resp.error.code != code_pb2.OK:
             raise RuntimeError('Server error: ' + resp.error.message)
 
+        # Exit recognition if any of the transcribed phrases could be
+        # one of our keywords.
+        if any(re.search(r'\b(exit|quit|stop)\b', alt.transcript, re.I)
+               for result in resp.results
+               for alt in result.alternatives):
+            print('Exiting..')
+            if True:
+                subprocess.call("sudo ps aux | grep 'python transcribe_streaming.py' | grep -v grep | awk '{print $2}' | xargs sudo kill -9", \
+                     shell=True)
+            break
+
         # Display the transcriptions & their alternatives
         for result in resp.results:
             # [transcript: "I want to listen to" confidence: 0.963642954826355]
@@ -197,13 +209,6 @@ def listen_print_loop(recognize_stream):
                 if PI:
                     play_stream(track_url)
 
-        # Exit recognition if any of the transcribed phrases could be
-        # one of our keywords.
-        if any(re.search(r'\b(exit|quit|stop)\b', alt.transcript, re.I)
-               for result in resp.results
-               for alt in result.alternatives):
-            print('Exiting..')
-            break
 
 def get_song_from_soundcloud(query=QUERY):
     title = "default"
