@@ -32,11 +32,11 @@ import json
 import soundcloud
 
 
-PI = False
+PI = True
 #soundcloud
 
 if PI:
-    import gstreamer_player
+    from gstreamer_player import GTK_Player
 
 QUERY = 'girlsgeneration'
 CLIENT_ID = ''
@@ -127,7 +127,7 @@ def record_audio(rate, chunk):
         # https://goo.gl/z757pE
         channels=1, rate=rate, output=False,
         input=True, frames_per_buffer=chunk,
-	    input_device_index = 0,
+	input_device_index = 0,
     )
 
     # Create a thread-safe buffer of audio data
@@ -193,7 +193,7 @@ def listen_print_loop(recognize_stream):
                 query = re.search(r'(\").+(\")',str(alternatives)).group(0)
                 print(query)
                 title,track_url = get_song_from_soundcloud(query)
-                print("title : {} track_url: {}".format(track_url,title))
+                print("title : {} track_url: {}".format(title,track_url))
                 if PI:
                     play_stream(track_url)
 
@@ -211,12 +211,12 @@ def get_song_from_soundcloud(query=QUERY):
     if tracks:
         print("found {} tracks",len(tracks))
         stream_url = tracks[0].uri + "/stream?client_id=" + CLIENT_ID
-        title = tracks[0].title
+        title = str(tracks[0].title)
 
     else :
         print("no songs found for query")
         stream_url = default_stream_url
-    return stream_url,title
+    return title,stream_url
 
 def play_stream(music_stream_uri):
 
