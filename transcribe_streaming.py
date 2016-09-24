@@ -28,10 +28,22 @@ from grpc.beta import implementations
 from grpc.framework.interfaces.face import face
 import pyaudio
 from six.moves import queue
+import json
 import soundcloud
-import soundscrape
-import pygst
-import gst
+
+
+PI = False
+#soundcloud
+
+if PI:
+    import gstreamer_player
+
+QUERY = 'girlsgeneration'
+CLIENT_ID = ''
+client = soundcloud.Client(client_id=CLIENT_ID)
+track_url = 'http://soundcloud.com/forss/flickermood'
+default_stream_url = 'https://api.soundcloud.com/tracks/134204364/stream?client_id=' + CLIENT_ID
+stream_url = ''
 
 # Audio recording parameters
 #RATE = 16000
@@ -115,7 +127,7 @@ def record_audio(rate, chunk):
         # https://goo.gl/z757pE
         channels=1, rate=rate, output=False,
         input=True, frames_per_buffer=chunk,
-	input_device_index = 0,
+	    input_device_index = 0,
     )
 
     # Create a thread-safe buffer of audio data
@@ -175,15 +187,41 @@ def listen_print_loop(recognize_stream):
 
         # Display the transcriptions & their alternatives
         for result in resp.results:
-            print(result.alternatives)
+            # [transcript: "I want to listen to" confidence: 0.963642954826355]
+            if result.alternatives:
+                alternatives = result.alternatives
+                query = re.search(r'(\").+(\")',str(alternatives)).group(0)
+                print(query)
+                title,track_url = get_song_from_soundcloud(query)
+                print("title : {} track_url: {}".format(track_url,title))
+                if PI:
+                    play_stream(track_url)
 
         # Exit recognition if any of the transcribed phrases could be
         # one of our keywords.
-        if any(re.search(r'\b(exit|quit)\b', alt.transcript, re.I)
+        if any(re.search(r'\b(exit|quit|stop)\b', alt.transcript, re.I)
                for result in resp.results
                for alt in result.alternatives):
             print('Exiting..')
             break
+
+def get_song_from_soundcloud(query=QUERY):
+    title = "default"
+    tracks = client.get('/tracks', q=query, order='hotness', limit=1)
+    if tracks:
+        print("found {} tracks",len(tracks))
+        stream_url = tracks[0].uri + "/stream?client_id=" + CLIENT_ID
+        title = tracks[0].title
+
+    else :
+        print("no songs found for query")
+        stream_url = default_stream_url
+    return stream_url,title
+
+def play_stream(music_stream_uri):
+
+    g_player = GTK_Player(music_stream_uri)
+    g_player.start_stop()
 
 
 def main():
