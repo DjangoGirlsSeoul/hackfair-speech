@@ -21,7 +21,7 @@ class GTK_Player(object):
         
     def start_stop(self):
         if not self.start:
-            print("Start player")
+            print("Start player : {}".format(self.player))
             self.player.set_state(Gst.State.PLAYING)
             self.start = True
         else:

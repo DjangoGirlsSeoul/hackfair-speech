@@ -32,8 +32,9 @@ import json
 import soundcloud
 import subprocess
 
-
+# enable it when running the code on Pi
 PI = False
+
 #soundcloud
 
 if PI:
@@ -45,8 +46,6 @@ client = soundcloud.Client(client_id=CLIENT_ID)
 track_url = 'http://soundcloud.com/forss/flickermood'
 default_stream_url = 'https://api.soundcloud.com/tracks/134204364/stream?client_id=' + CLIENT_ID
 stream_url = ''
-
-g_player = None 
 
 # Audio recording parameters
 #RATE = 16000
@@ -130,7 +129,7 @@ def record_audio(rate, chunk):
         # https://goo.gl/z757pE
         channels=1, rate=rate, output=False,
         input=True, frames_per_buffer=chunk,
-	input_device_index = 0,
+	#input_device_index = 0,
     )
 
     # Create a thread-safe buffer of audio data
@@ -194,8 +193,6 @@ def listen_print_loop(recognize_stream):
                for result in resp.results
                for alt in result.alternatives):
             print('Exiting..')
-            if g_player:
-                g_player.start_stop()
 
             # stop the process
             subprocess.call("sudo ps aux | grep 'python transcribe_streaming.py' | grep -v grep | awk '{print $2}' | xargs sudo kill -9", \
