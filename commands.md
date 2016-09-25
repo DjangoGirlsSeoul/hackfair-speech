@@ -72,4 +72,16 @@ sudo ps aux | grep "python transcribe_streaming.py" | grep -v grep | awk '{print
 #### Resources
 
 [raspberry pi with alsa](http://blog.scphillips.com/posts/2013/01/sound-configuration-on-raspberry-pi-with-alsa/)
+[gstreamer tutorial](http://brettviren.github.io/pygst-tutorial-org/pygst-tutorial.pdf)
+[gstreamer download](https://gstreamer.freedesktop.org/download/)
+[gstreamer code snippets](https://github.com/rubenrua/GstreamerCodeSnippets)
+[gstreamer blog](http://blog.scphillips.com/posts/2013/01/sound-configuration-on-raspberry-pi-with-alsa/)
+[Daemon service](https://web.archive.org/web/20160305151936/http://www.jejik.com/articles/2007/02/a_simple_unix_linux_daemon_in_python/)
+[Daemon example](https://bitbucket.org/dnetman99/raspberrypiprojects)
 
+##### Python packages
+[pyAudio](http://people.csail.mit.edu/hubert/pyaudio/)
+[Best practice Speech API](https://cloud.google.com/speech/docs/best-practices#language_support)
+
+#### Raspberry pi 
+[USB Audio](https://learn.adafruit.com/usb-audio-cards-with-a-raspberry-pi/)

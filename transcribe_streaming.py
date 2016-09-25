@@ -46,6 +46,8 @@ track_url = 'http://soundcloud.com/forss/flickermood'
 default_stream_url = 'https://api.soundcloud.com/tracks/134204364/stream?client_id=' + CLIENT_ID
 stream_url = ''
 
+g_player = None 
+
 # Audio recording parameters
 #RATE = 16000
 RATE = 48000
@@ -192,8 +194,11 @@ def listen_print_loop(recognize_stream):
                for result in resp.results
                for alt in result.alternatives):
             print('Exiting..')
-            if True:
-                subprocess.call("sudo ps aux | grep 'python transcribe_streaming.py' | grep -v grep | awk '{print $2}' | xargs sudo kill -9", \
+            if g_player:
+                g_player.start_stop()
+
+            # stop the process
+            subprocess.call("sudo ps aux | grep 'python transcribe_streaming.py' | grep -v grep | awk '{print $2}' | xargs sudo kill -9", \
                      shell=True)
             break
 
@@ -216,7 +221,7 @@ def get_song_from_soundcloud(query=QUERY):
     if tracks:
         print("found {} tracks",len(tracks))
         stream_url = tracks[0].uri + "/stream?client_id=" + CLIENT_ID
-        title = str(tracks[0].title)
+        title = str(tracks[0].title.encode('utf-8'))
 
     else :
         print("no songs found for query")
@@ -237,7 +242,7 @@ def main():
         with record_audio(RATE, CHUNK) as buffered_audio_data:
             # Second, a thread that sends requests with that data
             requests = request_stream(buffered_audio_data, RATE)
-            # Third, a thread that listens for transcription responses
+            # Third, a thread that listens for transcription responses and playback
             recognize_stream = service.StreamingRecognize(
                 requests, DEADLINE_SECS)
 
